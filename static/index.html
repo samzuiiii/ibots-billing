@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>iBots — Billing System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:        #1A56FF;
+      --blue-dark:   #1242D6;
+      --blue-tint:   #EEF3FF;
+      --blue-mid:    #C7D4FF;
+      --ink:         #0A0F1E;
+      --ink-2:       #1C2333;
+      --muted:       #6B7899;
+      --muted-light: #A8B3CF;
+      --bg:          #F0F2F9;
+      --bg-2:        #E8EAF4;
+      --surface:     #FFFFFF;
+      --border:      #E0E4EF;
+      --border-2:    #CDD3E3;
+      --success:     #0EA854;
+      --success-bg:  #EDFBF3;
+      --success-bd:  #A0E8C3;
+      --danger:      #E53935;
+      --danger-bg:   #FEF2F2;
+      --font:        'Plus Jakarta Sans', sans-serif;
+      --r-sm: 12px; --r-md: 16px; --r-lg: 22px; --r-xl: 28px;
+      --sh-xs: 0 1px 3px rgba(10,15,30,0.06);
+      --sh-sm: 0 2px 12px rgba(10,15,30,0.07);
+      --sh-md: 0 6px 24px rgba(10,15,30,0.09);
+      --sh-lg: 0 16px 48px rgba(10,15,30,0.13);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      /* Subtle dot grid background */
+      background-image: radial-gradient(circle, #C7D4FF 1px, transparent 1px);
+      background-size: 28px 28px;
+      background-attachment: fixed;
+    }
+
+    /* Gradient hero overlay at top */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 340px;
+      background: linear-gradient(160deg, #EEF3FF 0%, #F0F2F9 60%, transparent 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .anim { opacity: 0; animation: fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) forwards; }
+    .d1{animation-delay:0.05s} .d2{animation-delay:0.13s} .d3{animation-delay:0.21s}
+    .d4{animation-delay:0.29s} .d5{animation-delay:0.37s} .d6{animation-delay:0.45s}
+
+    /* TOP ACCENT BAR */
+    .topbar {
+      height: 3px;
+      background: linear-gradient(90deg, var(--blue) 0%, #7B9FFF 100%);
+      position: relative;
+      z-index: 10;
+    }
+
+    .page {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 0 28px 100px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 48px 0 44px;
+    }
+
+    .header-eyebrow {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 12px;
+    }
+
+    .header-title {
+      font-size: 38px;
+      font-weight: 700;
+      letter-spacing: -1.2px;
+      color: var(--ink);
+      line-height: 1.1;
+    }
+
+    .header-sub {
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 10px;
+      font-weight: 400;
+    }
+
+    /* ── LOGO ── */
+    .logo-block { text-align: right; }
+
+    .logo-mark {
+      font-size: 46px;
+      font-weight: 800;
+      letter-spacing: -3.5px;
+      line-height: 1;
+    }
+
+    .logo-mark .i { color: var(--blue); }
+    .logo-mark .b { color: var(--ink); }
+
+    .logo-rule {
+      height: 2px;
+      background: linear-gradient(90deg, var(--blue), transparent);
+      margin: 7px 0 6px;
+      border-radius: 2px;
+    }
+
+    .logo-tag {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted-light);
+      text-align: right;
+    }
+
+    .logo-address {
+      font-size: 11px;
+      color: var(--muted-light);
+      margin-top: 5px;
+      font-weight: 400;
+      text-align: right;
+    }
+
+    /* ── META BAR ── */
+    .meta-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .meta-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 20px 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--sh-xs);
+    }
+
+    .meta-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #1A56FF 0%, transparent 80%);
+    }
+
+    .meta-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--muted-light);
+      margin-bottom: 8px;
+    }
+
+    .meta-value {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      padding: 32px 36px;
+      margin-bottom: 14px;
+      box-shadow: var(--sh-sm);
+    }
+
+    .card-title {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--muted-light);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ── FORM FIELDS ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+    .field { display: flex; flex-direction: column; gap: 8px; }
+
+    .field label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .field input {
+      padding: 14px 18px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-sm);
+      font-family: var(--font);
+      font-size: 15px;
+      color: var(--ink);
+      background: var(--surface);
+      outline: none;
+      transition: border-color 0.18s, box-shadow 0.18s;
+    }
+
+    .field input:hover { border-color: var(--border-2); }
+
+    .field input:focus {
+      border-color: var(--blue);
+      background: #FAFBFF;
+      box-shadow: 0 0 0 4px rgba(26,86,255,0.08);
+    }
+
+    .field input::placeholder { color: var(--muted-light); font-weight: 300; }
+
+    /* ── CATALOG STATUS ── */
+    .catalog-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 18px;
+      border-radius: var(--r-md);
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+      font-size: 13px;
+      background: var(--bg);
+      color: var(--muted);
+      transition: all 0.3s;
+    }
+
+    .catalog-status.ready {
+      background: var(--success-bg);
+      border-color: var(--success-bd);
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .catalog-status.error {
+      background: var(--danger-bg);
+      border-color: #FCA5A5;
+      color: var(--danger);
+    }
+
+    .status-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      flex-shrink: 0;
+    }
+
+    .status-dot.pulse { animation: pulse 1.5s infinite; }
+
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    /* ── HERO SEARCH ── */
+    .search-row { display: flex; gap: 12px; }
+
+    .search-wrap { position: relative; flex: 1; }
+
+    .search-icon {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted-light);
+      font-size: 18px;
+      pointer-events: none;
+      transition: color 0.18s;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 18px 22px 18px 52px;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--ink);
+      background: var(--surface);
+      outline: none;
+      transition: border-color 0.18s, box-shadow 0.18s;
+      box-shadow: var(--sh-xs);
+    }
+
+    .search-input:hover { border-color: var(--border-2); }
+
+    .search-input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 5px rgba(26,86,255,0.10);
+    }
+
+    .search-input:focus + .search-icon,
+    .search-wrap:focus-within .search-icon { color: var(--blue); }
+
+    .search-input::placeholder { color: var(--muted-light); font-weight: 300; }
+
+    /* ── DROPDOWN ── */
+    .dropdown {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 0; right: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      box-shadow: var(--sh-lg);
+      z-index: 200;
+      overflow: hidden;
+      animation: ddIn 0.15s cubic-bezier(0.22,1,0.36,1);
+    }
+
+    @keyframes ddIn {
+      from { opacity: 0; transform: translateY(-10px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .drop-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.1s;
+      gap: 16px;
+    }
+
+    .drop-item:last-child { border-bottom: none; }
+    .drop-item:hover, .drop-item.active { background: var(--blue-tint); }
+
+    .drop-name  { font-size: 14px; font-weight: 500; color: var(--ink); }
+    .drop-price { font-size: 14px; font-weight: 700; color: var(--blue); white-space: nowrap; }
+
+    .drop-manual {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 20px;
+      font-size: 13px;
+      color: var(--muted);
+      cursor: pointer;
+      border-top: 1px solid var(--border);
+      transition: background 0.1s;
+    }
+
+    .drop-manual:hover { background: var(--bg); }
+
+    /* ── BUTTONS ── */
+    .btn {
+      padding: 16px 24px;
+      border-radius: var(--r-sm);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.16s;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .btn-ghost {
+      background: var(--surface);
+      color: var(--ink-2);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-ghost:hover { background: var(--bg-2); border-color: var(--border-2); }
+
+    .btn-blue {
+      background: var(--blue);
+      color: white;
+      border: none;
+      box-shadow: 0 2px 8px rgba(26,86,255,0.25);
+    }
+
+    .btn-blue:hover {
+      background: var(--blue-dark);
+      box-shadow: 0 4px 16px rgba(26,86,255,0.35);
+      transform: translateY(-1px);
+    }
+
+    /* ── MANUAL FORM ── */
+    .manual-form {
+      display: none;
+      grid-template-columns: 2fr 1fr 80px auto;
+      gap: 14px;
+      align-items: end;
+      margin-top: 20px;
+      padding: 22px 24px;
+      background: var(--bg);
+      border-radius: var(--r-md);
+      border: 1.5px dashed var(--border-2);
+    }
+
+    .manual-form.open { display: grid; animation: fadeUp 0.15s ease; }
+
+    /* ── TABLE ── */
+    .table-wrap { overflow-x: auto; }
+
+    table.bill-table { width: 100%; border-collapse: collapse; }
+
+    .bill-table thead tr { border-bottom: 1.5px solid var(--border); }
+
+    .bill-table thead th {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--muted-light);
+      padding: 14px 18px;
+      text-align: left;
+    }
+
+    .bill-table thead th.r { text-align: right; }
+
+    .bill-table tbody td {
+      padding: 20px 18px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--bg-2);
+      vertical-align: middle;
+      transition: background 0.1s;
+    }
+
+    .bill-table tbody tr:hover td { background: #FAFBFF; }
+    .bill-table tbody tr:last-child td { border-bottom: none; }
+
+    .td-r     { text-align: right; }
+    .td-sno   { color: var(--muted-light); font-size: 12px; width: 44px; font-weight: 700; }
+    .td-name  { font-size: 15px; font-weight: 500; }
+    .td-price { color: var(--muted); }
+    .td-total { font-weight: 700; letter-spacing: -0.3px; color: var(--ink); font-size: 15px; }
+
+    /* ── QTY CONTROLS ── */
+    .qty-ctrl { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+
+    .qty-btn {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border-2);
+      background: var(--surface);
+      font-size: 17px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.14s;
+      color: var(--muted);
+      line-height: 1;
+      padding-bottom: 1px;
+    }
+
+    .qty-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-tint); }
+
+    .qty-num { font-size: 15px; font-weight: 600; min-width: 22px; text-align: center; }
+
+    .rm-btn {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted-light);
+      transition: all 0.14s;
+      margin-left: 6px;
+      padding-bottom: 2px;
+    }
+
+    .rm-btn:hover { background: var(--danger-bg); color: var(--danger); }
+
+    /* ── EMPTY STATE ── */
+    .empty-state { padding: 64px 0; text-align: center; }
+    .empty-icon  { font-size: 52px; margin-bottom: 18px; opacity: 0.6; }
+    .empty-title { font-size: 17px; font-weight: 600; color: var(--ink-2); }
+    .empty-hint  { font-size: 13px; color: var(--muted); margin-top: 8px; line-height: 1.7; }
+
+    /* ── TOTALS ── */
+    .totals-wrap {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 28px;
+      padding-top: 24px;
+      border-top: 1.5px solid var(--bg-2);
+    }
+
+    .totals-box {
+      background: var(--bg);
+      border-radius: var(--r-lg);
+      padding: 26px 30px;
+      min-width: 320px;
+      border: 1px solid var(--border);
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 56px;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .tl { color: var(--muted); font-weight: 400; }
+    .tv { font-weight: 600; }
+
+    .total-divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+    .grand-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      color: var(--ink);
+    }
+
+    /* ── ACTIONS BAR ── */
+    .actions-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+      padding: 22px 32px;
+      background: var(--surface);
+      border-radius: var(--r-xl);
+      border: 1px solid var(--border);
+      box-shadow: var(--sh-sm);
+    }
+
+    .actions-left { font-size: 14px; color: var(--muted); }
+    .actions-left strong { color: var(--ink); font-weight: 700; }
+    .actions-right { display: flex; gap: 10px; }
+
+    .btn-print {
+      padding: 16px 44px;
+      border-radius: var(--r-sm);
+      font-family: var(--font);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      cursor: pointer;
+      background: var(--blue);
+      color: white;
+      border: none;
+      transition: all 0.2s cubic-bezier(0.22,1,0.36,1);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 20px rgba(26,86,255,0.35);
+    }
+
+    .btn-print:hover {
+      background: var(--blue-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(26,86,255,0.45);
+    }
+
+    .btn-print:active { transform: translateY(0); }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%) translateY(60px);
+      background: rgba(10,15,30,0.92);
+      backdrop-filter: blur(16px);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 40px;
+      font-size: 13px;
+      font-weight: 500;
+      opacity: 0;
+      transition: transform 0.32s cubic-bezier(0.34,1.56,0.64,1), opacity 0.22s ease;
+      pointer-events: none;
+      z-index: 999;
+      white-space: nowrap;
+    }
+
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 99px; }
+  </style>
+</head>
+<body>
+
+<div class="topbar"></div>
+<div class="page">
+
+  <!-- HEADER -->
+  <header class="header anim d1">
+    <div>
+      <div class="header-eyebrow">Billing System</div>
+      <h1 class="header-title">New Invoice</h1>
+      <p class="header-sub">Create, manage and print a professional bill</p>
+    </div>
+    <div class="logo-block">
+      <div class="logo-mark"><span class="i">i</span><span class="b">Bots</span></div>
+      <div class="logo-rule"></div>
+      <div class="logo-tag">Technology Solutions</div>
+      <div class="logo-address">Coimbatore, Tamil Nadu</div>
+    </div>
+  </header>
+
+  <!-- META BAR -->
+  <div class="meta-row anim d2">
+    <div class="meta-card">
+      <div class="meta-label">Bill ID</div>
+      <div class="meta-value" id="bill-id">—</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">Date</div>
+      <div class="meta-value" id="bill-date">—</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">Time</div>
+      <div class="meta-value" id="bill-time">—</div>
+    </div>
+  </div>
+
+  <!-- CUSTOMER -->
+  <section class="card anim d3">
+    <p class="card-title">Customer Details</p>
+    <div class="two-col">
+      <div class="field">
+        <label for="cust-name">Full Name</label>
+        <input type="text" id="cust-name" placeholder="e.g. Rajesh Kumar" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="cust-phone">Phone Number</label>
+        <input type="tel" id="cust-phone" placeholder="e.g. +91 98765 43210" autocomplete="off">
+      </div>
+    </div>
+  </section>
+
+  <!-- ADD PRODUCTS -->
+  <section class="card anim d4">
+    <p class="card-title">Add Products</p>
+
+    <div class="catalog-status" id="catalog-status">
+      <span class="status-dot pulse"></span>
+      <span id="catalog-msg">Loading product catalog…</span>
+    </div>
+
+    <div class="search-row">
+      <div class="search-wrap">
+        <input type="text" id="search-inp" class="search-input"
+               placeholder="Search for Arduino, Sensors, Motors, Raspberry Pi…"
+               autocomplete="off"
+               oninput="onSearch(this.value)"
+               onkeydown="onSearchKey(event)">
+        <span class="search-icon">⌕</span>
+        <div class="dropdown" id="dropdown" style="display:none"></div>
+      </div>
+      <button class="btn btn-ghost" onclick="toggleManual()">＋&nbsp; Add Manually</button>
+    </div>
+
+    <div class="manual-form" id="manual-form">
+      <div class="field">
+        <label>Product Name</label>
+        <input type="text" id="m-name" placeholder="Enter product name">
+      </div>
+      <div class="field">
+        <label>Price (₹)</label>
+        <input type="number" id="m-price" placeholder="0.00" min="0" step="0.01">
+      </div>
+      <div class="field">
+        <label>Qty</label>
+        <input type="number" id="m-qty" value="1" min="1">
+      </div>
+      <button class="btn btn-blue" onclick="addManual()">Add</button>
+    </div>
+  </section>
+
+  <!-- BILL TABLE -->
+  <section class="card anim d5">
+    <p class="card-title">Bill Items</p>
+    <div class="table-wrap">
+      <table class="bill-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Product</th>
+            <th class="r">Quantity</th>
+            <th class="r">Unit Price</th>
+            <th class="r">Total</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="bill-body">
+          <tr><td colspan="6">
+            <div class="empty-state">
+              <div class="empty-icon">🧾</div>
+              <div class="empty-title">No items added yet</div>
+              <div class="empty-hint">Search a product above or click Add Manually</div>
+            </div>
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="totals-block" style="display:none">
+      <div class="totals-wrap">
+        <div class="totals-box">
+          <div class="total-row">
+            <span class="tl">Subtotal</span>
+            <span class="tv" id="t-sub">₹0.00</span>
+          </div>
+          <div class="total-row">
+            <span class="tl">GST (18%)</span>
+            <span class="tv" id="t-gst">₹0.00</span>
+          </div>
+          <hr class="total-divider">
+          <div class="grand-row">
+            <span>Total</span>
+            <span id="t-total">₹0.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ACTIONS BAR -->
+  <div class="actions-bar anim d6">
+    <div class="actions-left" id="actions-status">Add products to begin billing</div>
+    <div class="actions-right">
+      <button class="btn btn-ghost" onclick="clearBill()">Clear</button>
+      <button class="btn-print" onclick="printBill()">🖨&nbsp; Print Bill as PDF</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  let catalog = [], billItems = [], manualOpen = false;
+  let billId = 'INV-' + Date.now().toString(36).toUpperCase().slice(-6);
+  document.getElementById('bill-id').textContent = billId;
+
+  function tick() {
+    const now = new Date();
+    document.getElementById('bill-date').textContent =
+      now.toLocaleDateString('en-IN', { day:'2-digit', month:'long', year:'numeric' });
+    document.getElementById('bill-time').textContent =
+      now.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true });
+  }
+  tick(); setInterval(tick, 1000);
+
+  async function loadCatalog() {
+    try {
+      const res  = await fetch('/products');
+      const data = await res.json();
+      catalog = data.products || [];
+      const st = document.getElementById('catalog-status');
+      const mg = document.getElementById('catalog-msg');
+      st.querySelector('.status-dot').classList.remove('pulse');
+      if (catalog.length > 0) {
+        st.className   = 'catalog-status ready';
+        mg.textContent = catalog.length + ' products loaded from catalog';
+      } else {
+        st.className   = 'catalog-status error';
+        mg.textContent = 'No products found — place catalog.pdf in project root and restart server';
+      }
+    } catch(e) {
+      document.getElementById('catalog-status').className = 'catalog-status error';
+      document.getElementById('catalog-msg').textContent  = 'Cannot connect to server — make sure Flask is running';
+    }
+  }
+  loadCatalog();
+
+  let activeIdx = -1;
+
+  function onSearch(q) {
+    q = q.trim();
+    const dd = document.getElementById('dropdown');
+    activeIdx = -1;
+    if (!q) { dd.style.display = 'none'; return; }
+    const hits = catalog.filter(p => p.name.toLowerCase().includes(q.toLowerCase())).slice(0, 8);
+    let html = hits.map((p, i) => `
+      <div class="drop-item" onmouseenter="activeIdx=${i};highlightDrop()"
+           onclick="selectProduct('${esc(p.name)}', ${p.price})">
+        <span class="drop-name">${boldMatch(p.name, q)}</span>
+        <span class="drop-price">&#8377;${p.price.toFixed(2)}</span>
+      </div>`).join('');
+    html += `<div class="drop-manual" onclick="prefillManual('${esc(q)}')">
+               &#xFF0B; Add "<strong>${q}</strong>" manually
+             </div>`;
+    dd.innerHTML = html;
+    dd.style.display = 'block';
+  }
+
+  function onSearchKey(e) {
+    const dd    = document.getElementById('dropdown');
+    if (dd.style.display === 'none') return;
+    const items = dd.querySelectorAll('.drop-item');
+    if      (e.key === 'ArrowDown')             { activeIdx = Math.min(activeIdx+1, items.length-1); highlightDrop(); e.preventDefault(); }
+    else if (e.key === 'ArrowUp')               { activeIdx = Math.max(activeIdx-1, -1); highlightDrop(); e.preventDefault(); }
+    else if (e.key === 'Enter' && activeIdx>=0) { items[activeIdx].click(); e.preventDefault(); }
+    else if (e.key === 'Escape')                { dd.style.display = 'none'; }
+  }
+
+  function highlightDrop() {
+    document.querySelectorAll('.drop-item')
+      .forEach((el, i) => el.classList.toggle('active', i === activeIdx));
+  }
+
+  function boldMatch(text, q) {
+    const i = text.toLowerCase().indexOf(q.toLowerCase());
+    if (i < 0) return text;
+    return text.slice(0,i)
+      + `<strong style="color:var(--blue)">${text.slice(i, i+q.length)}</strong>`
+      + text.slice(i + q.length);
+  }
+
+  function esc(s) { return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrap'))
+      document.getElementById('dropdown').style.display = 'none';
+  });
+
+  function selectProduct(name, price) {
+    addItem(name, price, 1);
+    document.getElementById('search-inp').value = '';
+    document.getElementById('dropdown').style.display = 'none';
+    document.getElementById('search-inp').focus();
+  }
+
+  function prefillManual(name) {
+    document.getElementById('m-name').value = name;
+    openManual();
+    document.getElementById('m-price').focus();
+    document.getElementById('search-inp').value = '';
+    document.getElementById('dropdown').style.display = 'none';
+  }
+
+  function toggleManual() { manualOpen ? closeManual() : openManual(); }
+  function openManual()   { manualOpen = true;  document.getElementById('manual-form').classList.add('open'); }
+  function closeManual()  { manualOpen = false; document.getElementById('manual-form').classList.remove('open'); }
+
+  function addManual() {
+    const name  = document.getElementById('m-name').value.trim();
+    const price = parseFloat(document.getElementById('m-price').value);
+    const qty   = parseInt(document.getElementById('m-qty').value) || 1;
+    if (!name)                return toast('Please enter a product name');
+    if (!price || price <= 0) return toast('Please enter a valid price');
+    addItem(name, price, qty);
+    document.getElementById('m-name').value  = '';
+    document.getElementById('m-price').value = '';
+    document.getElementById('m-qty').value   = '1';
+    closeManual();
+  }
+
+  function addItem(name, price, qty) {
+    const ex = billItems.find(i => i.name.toLowerCase() === name.toLowerCase());
+    if (ex) { ex.qty += qty; toast(name + ' — quantity updated'); }
+    else    { billItems.push({ id: Date.now()+Math.random(), name, price, qty }); toast(name + ' added'); }
+    renderTable();
+  }
+
+  function changeQty(id, delta) {
+    const item = billItems.find(i => i.id === id);
+    if (!item) return;
+    item.qty += delta;
+    if (item.qty <= 0) billItems = billItems.filter(i => i.id !== id);
+    renderTable();
+  }
+
+  function removeItem(id) {
+    billItems = billItems.filter(i => i.id !== id);
+    renderTable();
+  }
+
+  function clearBill() {
+    if (billItems.length > 0 && !confirm('Clear all items?')) return;
+    billItems = [];
+    billId = 'INV-' + Date.now().toString(36).toUpperCase().slice(-6);
+    document.getElementById('bill-id').textContent = billId;
+    document.getElementById('cust-name').value  = '';
+    document.getElementById('cust-phone').value = '';
+    renderTable();
+    toast('Bill cleared');
+  }
+
+  function renderTable() {
+    const tbody  = document.getElementById('bill-body');
+    const totals = document.getElementById('totals-block');
+    const status = document.getElementById('actions-status');
+
+    if (billItems.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6">
+        <div class="empty-state">
+          <div class="empty-icon">🧾</div>
+          <div class="empty-title">No items added yet</div>
+          <div class="empty-hint">Search a product above or click Add Manually</div>
+        </div></td></tr>`;
+      totals.style.display = 'none';
+      status.innerHTML = 'Add products to begin billing';
+      return;
+    }
+
+    tbody.innerHTML = billItems.map((item, i) => `
+      <tr>
+        <td class="td-sno">${i+1}</td>
+        <td class="td-name">${item.name}</td>
+        <td class="td-r">
+          <div class="qty-ctrl">
+            <button class="qty-btn" onclick="changeQty(${item.id}, -1)">&#8722;</button>
+            <span class="qty-num">${item.qty}</span>
+            <button class="qty-btn" onclick="changeQty(${item.id}, +1)">+</button>
+          </div>
+        </td>
+        <td class="td-r td-price">&#8377;${item.price.toFixed(2)}</td>
+        <td class="td-r td-total">&#8377;${(item.price * item.qty).toFixed(2)}</td>
+        <td class="td-r"><button class="rm-btn" onclick="removeItem(${item.id})">&times;</button></td>
+      </tr>`).join('');
+
+    const sub   = billItems.reduce((s, i) => s + i.price * i.qty, 0);
+    const gst   = sub * 0.18;
+    const total = sub + gst;
+
+    document.getElementById('t-sub').textContent   = '₹' + sub.toFixed(2);
+    document.getElementById('t-gst').textContent   = '₹' + gst.toFixed(2);
+    document.getElementById('t-total').textContent = '₹' + total.toFixed(2);
+    totals.style.display = 'block';
+
+    const count = billItems.reduce((s, i) => s + i.qty, 0);
+    status.innerHTML = `<strong>${count} item${count > 1 ? 's' : ''}</strong> added &nbsp;·&nbsp; Total: <strong>&#8377;${total.toFixed(2)}</strong>`;
+  }
+
+  function printBill() {
+    if (billItems.length === 0) return toast('Add items to the bill first');
+
+    const name  = document.getElementById('cust-name').value.trim() || 'Walk-in Customer';
+    const phone = document.getElementById('cust-phone').value.trim();
+    const date  = document.getElementById('bill-date').textContent;
+    const time  = document.getElementById('bill-time').textContent;
+    const sub   = billItems.reduce((s, i) => s + i.price * i.qty, 0);
+    const gst   = sub * 0.18;
+    const total = sub + gst;
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Invoice ${billId} — iBots</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #0A0F1E; padding: 52px 60px; max-width: 820px; margin: 0 auto; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .topbar { height: 3px; background: linear-gradient(90deg, #1A56FF, #7B9FFF); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .hdr { display: flex; justify-content: space-between; align-items: flex-start; padding: 36px 0 28px; border-bottom: 1px solid #E0E4EF; margin-bottom: 32px; }
+  .inv-label { font-size: 9px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #A8B3CF; margin-bottom: 8px; }
+  .inv-id { font-size: 15px; font-weight: 700; color: #0A0F1E; }
+  .logo { font-size: 44px; font-weight: 800; letter-spacing: -3px; line-height: 1; }
+  .logo .i { color: #1A56FF; } .logo .b { color: #0A0F1E; }
+  .logo-rule { height: 2px; background: linear-gradient(90deg, #1A56FF, transparent); margin: 6px 0 4px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .logo-tag { font-size: 9px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #A8B3CF; text-align: right; }
+  .logo-addr { font-size: 11px; color: #A8B3CF; text-align: right; margin-top: 4px; }
+  .bill-dt { font-size: 12px; color: #6B7899; margin-top: 8px; text-align: right; }
+  .cust { background: #F4F6FB; border-radius: 14px; padding: 22px 26px; margin-bottom: 32px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .cust-lbl { font-size: 9px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: #A8B3CF; margin-bottom: 10px; }
+  .cust-name { font-size: 22px; font-weight: 700; }
+  .cust-phone { font-size: 13px; color: #6B7899; margin-top: 5px; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { font-size: 9px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: #A8B3CF; padding: 12px 14px; text-align: left; border-bottom: 1px solid #E0E4EF; }
+  thead th.r { text-align: right; }
+  tbody td { padding: 15px 14px; font-size: 13px; border-bottom: 1px solid #F4F6FB; vertical-align: middle; }
+  tbody td.r { text-align: right; }
+  tbody td.sno { color: #A8B3CF; font-size: 11px; font-weight: 700; }
+  tbody td.nm { font-weight: 500; }
+  tbody td.tot { font-weight: 700; }
+  tbody tr:last-child td { border-bottom: none; }
+  .totals { margin-top: 28px; display: flex; flex-direction: column; align-items: flex-end; }
+  .trow { display: flex; gap: 64px; font-size: 13px; margin-bottom: 9px; }
+  .trow .l { color: #6B7899; min-width: 80px; text-align: right; }
+  .trow .v { font-weight: 600; min-width: 90px; text-align: right; }
+  .tdiv { width: 300px; border: none; border-top: 1px solid #E0E4EF; margin: 14px 0 14px auto; }
+  .grand { display: flex; gap: 64px; font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+  .grand .l, .grand .v { min-width: 90px; text-align: right; }
+  .footer { margin-top: 48px; border-top: 1px solid #F4F6FB; padding-top: 24px; text-align: center; }
+  .footer .ty { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .footer p { font-size: 11px; color: #A8B3CF; margin-bottom: 3px; }
+  @media print { body { padding: 24px 28px; } @page { margin: 12mm 14mm; size: A4; } }
+</style>
+</head>
+<body>
+<div class="topbar"></div>
+<div class="hdr">
+  <div>
+    <div class="inv-label">Tax Invoice</div>
+    <div class="inv-id">${billId}</div>
+  </div>
+  <div>
+    <div class="logo"><span class="i">i</span><span class="b">Bots</span></div>
+    <div class="logo-rule"></div>
+    <div class="logo-tag">Technology Solutions</div>
+    <div class="logo-addr">Coimbatore, Tamil Nadu</div>
+    <div class="bill-dt">${date} &nbsp;&middot;&nbsp; ${time}</div>
+  </div>
+</div>
+<div class="cust">
+  <div class="cust-lbl">Bill To</div>
+  <div class="cust-name">${name}</div>
+  ${phone ? `<div class="cust-phone">${phone}</div>` : ''}
+</div>
+<table>
+  <thead>
+    <tr>
+      <th>#</th><th>Product</th>
+      <th class="r">Qty</th>
+      <th class="r">Unit Price</th>
+      <th class="r">Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${billItems.map((item, i) => `
+    <tr>
+      <td class="sno">${i+1}</td>
+      <td class="nm">${item.name}</td>
+      <td class="r">${item.qty}</td>
+      <td class="r">&#8377;${item.price.toFixed(2)}</td>
+      <td class="r tot">&#8377;${(item.price * item.qty).toFixed(2)}</td>
+    </tr>`).join('')}
+  </tbody>
+</table>
+<div class="totals">
+  <div class="trow"><span class="l">Subtotal</span><span class="v">&#8377;${sub.toFixed(2)}</span></div>
+  <div class="trow"><span class="l">GST (18%)</span><span class="v">&#8377;${gst.toFixed(2)}</span></div>
+  <hr class="tdiv">
+  <div class="grand"><span class="l">Total</span><span class="v">&#8377;${total.toFixed(2)}</span></div>
+</div>
+<div class="footer">
+  <div class="ty">Thank you for your business!</div>
+  <p>iBots Technology Solutions &middot; Coimbatore, Tamil Nadu</p>
+  <p>Computer generated invoice &middot; No signature required</p>
+</div>
+</body>
+</html>`;
+
+    const blob = new Blob([html], { type: 'text/html' });
+    const url  = URL.createObjectURL(blob);
+    const win  = window.open(url, '_blank');
+    if (!win) return toast('Please allow popups to print');
+    win.onload = () => setTimeout(() => { win.print(); URL.revokeObjectURL(url); }, 600);
+  }
+
+  let toastTimer;
+  function toast(msg) {
+    clearTimeout(toastTimer);
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+  }
+</script>
+</body>
+</html>
