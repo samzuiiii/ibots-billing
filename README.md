@@ -1,95 +1,115 @@
-Billing System
-A professional, full-stack billing application built for iBots Technology Solutions, Coimbatore. Enables fast invoice generation with automatic product lookup from a PDF catalog, manual entry support, GST calculation, and print-to-PDF output.
+# Billing System
 
-Features
+A professional full-stack billing application built for **iBots Technology Solutions, Coimbatore**. Enables fast invoice generation with automatic product lookup from a PDF catalog, manual entry support, GST calculation, and print-to-PDF output.
 
-PDF Catalog Integration — Upload any product catalog PDF and the system automatically extracts product names and prices using pdfplumber
-Live Product Search — Real-time search with instant suggestions as you type, with matched text highlighted
-Manual Entry — Add any product not in the catalog with a custom name and price
-Auto GST Calculation — Subtotal, 18% GST, and grand total calculated automatically
-Professional Invoice — Print a formatted, branded invoice as PDF with one click
-Live Clock — Bill date and time update in real time
-Any PDF Support — Replace the catalog PDF and restart the server — no code changes needed
+---
 
+## Features
 
-Tech Stack
-LayerTechnologyPurposeBackendPython + FlaskREST API serverPDF ParsingpdfplumberExtract products from PDFFrontendHTML + CSS + JavaScriptUser interfaceAPI CommunicationFetch APIBrowser-to-server callsPrintBlob URL + window.print()Generate PDF invoices
+- **PDF Catalog Integration** — Reads any product catalog PDF automatically on server startup using pdfplumber
+- **Live Product Search** — Real-time search with instant suggestions as you type, matched text highlighted in blue
+- **Manual Entry** — Add any product not in the catalog with a custom name and price
+- **Auto GST Calculation** — Subtotal, 18% GST and grand total calculated automatically
+- **Professional Invoice** — Print a fully formatted, branded invoice as PDF with one click
+- **Live Clock** — Bill ID, date and time auto-generated on every session
+- **Any PDF Support** — Replace the catalog PDF and restart the server, no code changes needed
 
-Project Structure
+---
+
+## Tech Stack
+
+| Layer | Technology | Purpose |
+|---|---|---|
+| Backend | Python + Flask | REST API server |
+| PDF Parsing | pdfplumber | Extract products from PDF catalog |
+| Frontend | HTML + CSS + JavaScript | User interface |
+| API Communication | Fetch API | Browser to server communication |
+| Print | Blob URL + window.print() | Generate formatted PDF invoices |
+
+---
+
+## Project Structure
 ibots-billing/
 ├── app.py                 # Flask backend server
-├── catalog.pdf            # Product catalog (replace to update)
+├── catalog.pdf            # Product catalog — replace to update
 ├── requirements.txt       # Python dependencies
-├── uploads/               # Uploaded PDF storage
+├── uploads/               # PDF storage
 └── static/
-      └── index.html       # Frontend application
+└── index.html       # Frontend application
 
-Getting Started
-Prerequisites
+---
 
-Python 3.8 or higher
-pip
+## Getting Started
 
-Installation
-1. Clone the repository
-bashgit clone https://github.com/samzuiiii/ibots-billing.git
+### Prerequisites
+- Python 3.8 or higher
+- pip
+
+### Installation
+
+**1. Clone the repository**
+```bash
+git clone https://github.com/samzuiiii/ibots-billing.git
 cd ibots-billing
-2. Install dependencies
-bashpip install flask flask-cors pdfplumber
-3. Add your product catalog
-Place your product catalog PDF in the root folder and name it catalog.pdf.
-The PDF should contain product names and prices — table format or plain list both work.
-4. Run the server
-bashpython app.py
-5. Open the app
-Visit http://localhost:5000 in your browser.
-You should see:
-[OK] Loaded 90 products from catalog.pdf
-Running on http://127.0.0.1:5000
+```
 
-How It Works
-1. Server Startup
-When python app.py runs, Flask reads catalog.pdf using pdfplumber. It extracts all product names and prices and stores them in memory. The terminal confirms how many products were loaded.
-2. Page Load
-The browser opens the billing interface and immediately calls the /products API endpoint. The green status bar confirms the catalog is ready.
-3. Product Search
-As the user types in the search box, JavaScript filters the in-memory product list and shows matching results instantly — no additional server calls needed. Matched characters are highlighted in blue.
-4. Adding Products
+**2. Install dependencies**
+```bash
+pip install flask flask-cors pdfplumber
+```
 
-From catalog — Click a suggestion to add it to the bill with price auto-filled
-Manually — Click "Add Manually" to enter a custom product name and price
+**3. Add your product catalog**
 
-5. Bill Generation
-Quantities can be adjusted with + / − controls. Subtotal, GST (18%) and total update automatically. Clicking "Print Bill as PDF" opens a formatted invoice in a new tab and triggers the browser print dialog.
-6. Updating the Catalog
-To use a different product catalog:
+Place your PDF in the root folder and rename it to `catalog.pdf`
 
-Replace catalog.pdf in the project root with the new PDF
-Restart the server — Ctrl+C then python app.py
-The new products load automatically
+**4. Run the server**
+```bash
+python app.py
+```
+
+**5. Open in browser**
+http://localhost:5000
+---
+
+## How It Works
+
+**1. Server Startup**
+When `python app.py` runs, Flask reads `catalog.pdf` using pdfplumber, extracts all product names and prices, and stores them in memory. The terminal confirms how many products were loaded.
+
+**2. Page Load**
+The browser calls the `/products` API on load. The green status bar confirms the catalog is ready with the product count.
+
+**3. Product Search**
+As the user types, JavaScript filters the in-memory product list instantly — no extra server calls. Matched characters are highlighted in blue in the dropdown.
+
+**4. Adding Products**
+- From catalog → click a suggestion, price is auto-filled
+- Not in catalog → click Add Manually, enter name and price
+
+**5. Bill Generation**
+Quantities adjusted with + / − controls. Subtotal, GST (18%) and total update live. Print Bill opens a formatted invoice in a new tab and triggers the browser print dialog.
+
+**6. Updating the Catalog**
+Replace `catalog.pdf` → restart server → new products load automatically.
+
+---
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/` | Serves the frontend |
+| GET | `/products` | Returns full product list from catalog |
+| GET | `/search?q=query` | Returns filtered products matching query |
+
+---
+
+## Built With
+
+- [Flask](https://flask.palletsprojects.com/) — Python web framework
+- [pdfplumber](https://github.com/jsvine/pdfplumber) — PDF extraction
+- [Plus Jakarta Sans](https://fonts.google.com/specimen/Plus+Jakarta+Sans) — UI typography
+
+---
 
 
-API Endpoints
-MethodEndpointDescriptionGET/Serves the frontend applicationGET/productsReturns full product list from catalogGET/search?q=queryReturns filtered products matching query
-
-Screenshots
-
-Bill ID, date and time are auto-generated on every session.
-The search bar provides instant suggestions from the loaded catalog.
-The printed invoice includes the iBots logo, customer details, itemized products, GST breakdown and total.
-
-
-Updating Prices
-All prices are read directly from catalog.pdf. To update any price:
-
-Edit the PDF catalog with the new prices
-Replace catalog.pdf in the project folder
-Restart the server
-
-
-Built With
-
-Flask — Python web framework
-pdfplumber — PDF text and table extraction
-Plus Jakarta Sans — UI typography
-Google Fonts — Font delivery
